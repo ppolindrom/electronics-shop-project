@@ -33,12 +33,10 @@ class Item:
         return self.__name
 
     @name.setter
-    def name(self, name: str):
-        try:
-            if len(name) <= 10:
-                self.__name = name
-        except:
-            print("Наименование товара превышает 10 символов")
+    def name(self, value: str):
+        if len(value) > 10:
+            raise Exception('Наименование товара превышает 10 символов.')
+        self.__name = value
 
 
     def calculate_total_price(self) -> float:

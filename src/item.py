@@ -21,17 +21,27 @@ class Item:
         self.quantity = quantity
         Item.all.append(self)
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}('{self.__name}', {self.price}, {self.quantity})"
+
+    def __str__(self):
+        return self.__name
+
+    def __add__(self, other):
+        if not isinstance(other, Item):
+            raise ValueError('Складывать можно только объекты Item и дочерние от них.')
+        return int(self.quantity) + int(other.quantity)
+
+
     @property
     def name(self):
         return self.__name
 
     @name.setter
-    def name(self, name: str):
-        try:
-            if len(name) <= 10:
-                self.__name = name
-        except:
-            print("Наименование товара превышает 10 символов")
+    def name(self, value: str):
+        if len(value) > 10:
+            raise Exception('Наименование товара превышает 10 символов.')
+        self.__name = value
 
 
     def calculate_total_price(self) -> float:

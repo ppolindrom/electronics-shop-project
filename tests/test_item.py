@@ -1,5 +1,8 @@
 """Здесь надо написать тесты с использованием pytest для модуля item."""
+import pytest
+
 from src.item import Item
+from src.phone import Phone
 
 def test_item():
     # пример товаров для тестирования
@@ -22,6 +25,13 @@ def test_item():
     # Тест переменной all
     assert Item.all == [item1, item2]
 
+    item1 = Item("Смартфон", 10000, 20)
+    phone1 = Phone("iPhone 14", 120_000, 5, 2)
+    assert item1 + phone1 == 25
+    assert phone1 + phone1 == 10
+
+
+
 def test_instantiate_from_csv():
     item = Item('Телефон', 10000, 5)
 
@@ -42,3 +52,10 @@ def test_instantiate_from_csv():
     assert Item.string_to_number('5') == 5
     assert Item.string_to_number('5.0') == 5
     assert Item.string_to_number('5.5') == 5
+
+
+
+def test_repr_str():
+    item1 = Item("Смартфон", 10000, 20)
+    assert repr(item1) == "Item('Смартфон', 10000, 20)"
+    assert str(item1) == 'Смартфон'

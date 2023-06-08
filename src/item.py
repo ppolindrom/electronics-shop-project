@@ -1,6 +1,16 @@
 import csv
 import os
 
+
+class InstantiateCSVError(Exception):
+    def __init__(self):
+        self.message = 'Файл item.csv поврежден'
+
+class CSVNotFoundError(InstantiateCSVError):
+    def __init__(self):
+        self.message = 'Файл отсутствует'
+
+
 class Item:
     """
     Класс для представления товара в магазине.
@@ -32,7 +42,6 @@ class Item:
             raise ValueError('Складывать можно только объекты Item и дочерние от них.')
         return int(self.quantity) + int(other.quantity)
 
-
     @property
     def name(self):
         return self.__name
@@ -42,7 +51,6 @@ class Item:
         if len(value) > 10:
             raise Exception('Наименование товара превышает 10 символов.')
         self.__name = value
-
 
     def calculate_total_price(self) -> float:
         """
@@ -59,14 +67,41 @@ class Item:
         self.price *= self.pay_rate
 
     @classmethod
-    def instantiate_from_csv(cls) -> None:
-        cls.all.clear()
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + '/items.csv', encoding='utf-8') as csv_file:
-            reader = csv.DictReader(csv_file)
+    def instantiate_csv(cls, filename) -> None:
+        """Вызываем классы из файла"""
 
-            for row in reader:
-                cls(row['name'], row['price'], row['quantity'])
+        try:
+            cls.all.clear()
+
+            with open(filename, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    cls(row['name'], row['price'], row['quantity'])
+
+                    if not row['name']:
+                        raise InstantiateCSVError
+                    if not row['price']:
+                        raise InstantiateCSVError
+                    if not row['quantity']:
+                        raise InstantiateCSVError
+        # Обработка ошибки файл не найден
+        except FileNotFoundError:
+            raise CSVNotFoundError
+        # Обработка ошибки файл поврежден
+        except KeyError:
+            raise InstantiateCSVError
+
+    @classmethod
+    def instantiate_from_csv(cls) -> None:
+        """Инициализирует экземпляр класса ITEM"""
+
+        address_file = '../src/items.csv'
+        try:
+            cls.instantiate_csv(address_file)
+        except CSVNotFoundError as ex:
+            print(ex.message)
+        except InstantiateCSVError as ex:
+            print(ex.message)
 
     @staticmethod
     def string_to_number(num):
